@@ -8,30 +8,70 @@ admin.initializeApp({
 });
 
 var db = admin.database();
-var ref = db.ref("Test");
 // ref.once("value", function(result) {
 //   console.log(result.val());
 // });
 
-exports.GetAll = function(cb) {
-  ref.once("value", function(snapshot) {
+exports.GetAllFirebase = function(cb) {
+  db.ref("/LagoUser/").once("value", function(snapshot) {
     cb(null, snapshot.val());
     console.log(snapshot.val());
   });
 };
 
-exports.AddFirebase = function(val) {
-  db.ref("users/" + userId).set(
+exports.GetRFID = function(rfid, cb) {
+  db.ref("LagoUser/" + rfid).once("value", function(snapshot) {
+    cb(null, snapshot.val());
+    console.log(snapshot.val());
+  });
+};
+
+exports.AddFirebase = function(rfid, name, balance, points, cb) {
+  db.ref("/LagoUser/" + rfid).set(
     {
-      username: name,
-      email: email,
-      profile_picture: imageUrl
+      Name: name,
+      Balance: balance,
+      Points: points
     },
     function(error) {
       if (error) {
-        // The write failed...
+        cb("Error");
       } else {
-        // Data saved successfully!
+        cb(null);
+        console.log("Add Success!");
+      }
+    }
+  );
+};
+
+exports.UpdateBalance = function(rfid, balance, cb) {
+  db.ref("/LagoUser/" + rfid).update(
+    {
+      Balance: balance
+    },
+    function(error) {
+      if (error) {
+        cb("Error");
+      } else {
+        cb(null);
+        console.log("Update Success");
+      }
+    }
+  );
+};
+
+exports.UpdatePointsBalance = function(rfid, balance, points, cb) {
+  db.ref("/LagoUser/" + rfid).update(
+    {
+      Balance: balance,
+      Points: points
+    },
+    function(error) {
+      if (error) {
+        cb("Error");
+      } else {
+        cb(null);
+        console.log("Updated Points and Balance!");
       }
     }
   );
